@@ -1,0 +1,33 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card w-100 h-100">
+        <div class="card-header text-white bg-primary">
+        	<div>
+        		<ul class="pl-2 mb-0">
+        			<li class="d-inline mr-2"><%= @squad.match.match_title %></li>
+              <li class="d-inline mr-2"><%= link_to "Edit Squad", edit_squad_path(@squad), class: "btn btn-warning btn-sm", method: :get %></li>
+            </ul>
+        	</div>
+        </div>
+        <div class="card-body px-0">
+          <%  @squad.player_ids.each_slice(6).each do |squads| %>
+          <div class="card-deck">
+	      		<% squads.each do |player| %>
+	      			<% plyer = @squad.get_player(player) %>
+	      				<div class="card-deck mx-auto mt-3">
+							  <div class="card player-card">
+							  	<span class="badge badge-pill badge-warning no-pill"><%= plyer.points %></span>
+							    <img src="/assets/player.png" class="card-img-top img-circular mx-auto" alt="...">
+							    <h6 class="player-title text-center"><%= plyer.get_role %><br>
+							   	<%= plyer.player %></h6>
+							  </div>
+								</div>
+						<% end %>
+          </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

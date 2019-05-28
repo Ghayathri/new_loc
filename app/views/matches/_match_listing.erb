@@ -1,0 +1,43 @@
+<% @matches.each_slice(3).each do |matches| %>
+    <div class="col-xs-5">
+      <% matches.each do |match| %>
+        <div class="card-container mt-4 pl-5">
+          <div class="card-main u-clearfix">
+            <img class="card-img" src="/assets/cskvsrr.png" alt="Card image">
+            <div class="card-img-overlay">
+              <div class="card-sub">          
+                <h2 class="match-title"><%= match.team_1 %> Vs <%= match.team_2 %></h2>
+                <span class="card-description subtle">These last few weeks I have been working hard on a new brunch recipe for you all.</span>
+                <div class="card-read"><%= match_time_display(match.match_time) %></div>
+                <% if match.match_started? %>
+                  <%= link_to "Live",  match_live_index_path(match_id: match.id), class: "btn btn-danger btn-sm" %>
+                  <%= link_to "Create Squad", new_squad_path(match_id: match.id), class: "btn btn-primary btn-sm", method: :get %>
+                <% else %>
+                  <div class="auction_start_div">
+                    <input type="hidden" id="startDay<%= match.id %>" value="<%= count_down_timer_server match.match_time %>"/>
+                    <div class="clock-style" id="mys<%= match.id %>"></div>
+                    <div id="loading_spinner" style="display:none;"><img src="/assets/loader.gif"></div>
+                  </div>
+                  <% unless match.my_squads(current_user).present? %>
+                    <%= link_to "Create Squad", new_squad_path(match_id: match.id), class: "btn btn-primary btn-sm", method: :get %>
+                  <% else %>
+                    <%= link_to "View my Squad", squad_path(match.user_squad(current_user.id)), class: "btn btn-primary btn-sm", method: :get  %>
+                  <% end %>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                      $('meta[name=server_time]').attr("content", "<%= count_down_timer_server(DateTime.now) %>");
+                      clockq["<%= match.id %>"] = document.getElementById('mys<%= match.id %>');
+                      startDay["<%= match.id %>"] = document.getElementById('startDay<%= match.id %>');
+                      call_live_timmer("<%= match.id %>");
+                    });
+                  </script>
+                <% end %>
+              </div>
+            </div>
+            <!-- <img src="/assets/cskvsrr.png" alt="" class="card-media" /> -->
+          </div>
+          <div class="card-shadow"></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>

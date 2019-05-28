@@ -1,0 +1,37 @@
+
+<h5>Batting</h5>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Batsman</th>
+      <th scope="col">Runs</th>
+      <th scope="col">Balls</th>
+      <th scope="col">Dismissal</th>
+      <th scope="col">6s</th>
+      <th scope="col">4s</th>
+      <th scope="col">Dismissal Info</th>
+      <th scope="col">Strike Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  	<% @match.battings.group_by(&:team_name).each do |batting, info| %>
+      <tr>
+        <th><%= batting %></th>
+      </tr>
+      <% info.each_with_index do |bat,index| %>
+    		<tr>
+  	      <td><%= bat.batsman %></td>
+  	      <td><%= bat.runs %></td>
+  	      <td><%= bat.balls_played %></td>
+  	      <td><%= bat.dismissal %></td>
+  	      <td><%= bat.sixes %></td>
+  	      <td><%= bat.fours %></td>
+  	      <td><%= bat.dismissal_info %></td>
+  	      <td><%= bat.strike_rate %></td>
+  	    </tr>
+      <% end %>
+	<% end %>
+  </tbody>
+</table>
+

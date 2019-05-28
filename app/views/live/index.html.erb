@@ -1,0 +1,106 @@
+<div class="container mt-5">
+	<div class="row">
+		<div class="col-8">
+			<div class="card mb-3">
+				<div class="card-header text-white bg-info">Your Squad</div>
+				<div class="card-body">
+					<table class="table">
+						<th>Player</th>
+						<th>Runs</th>
+						<th>Balls</th>
+						<th>Dismissal</th>
+						<th>6s</th>
+						<th>4s</th>
+						<th>Dismissal Info</th>
+						<th>Strike Rate</th>
+						<th>Points</th>
+						<% @players.each do |player| %>
+							 	<% b_score = @match.battings.find_by(pid: player.pid) %>
+							 	<% if b_score.present? %>
+								     		<tr>
+						  	      <td><%= b_score.batsman %></td>
+						  	      <td><%= b_score.runs %></td>
+						  	      <td><%= b_score.balls_played %></td>
+						  	      <td><%= b_score.dismissal %></td>
+						  	      <td><%= b_score.sixes %></td>
+						  	      <td><%= b_score.fours %></td>
+						  	      <td><%= b_score.dismissal_info %></td>
+						  	      <td><%= b_score.strike_rate %></td>
+						  	      <td><%= player.get_points(current_user, @match) %></td>
+						  	    </tr>
+							<% end %>
+						<% end %>
+					</table>
+					<table class="table">
+						<th>Player</th>
+						<th>Overs</th>
+						<th>Wickets</th>
+						<th>Maidens</th>
+						<th>Runs</th>
+						<th>6s</th>
+						<th>4s</th>
+						<th>Dots</th>
+						<th>ER</th>
+						<th>Points</th>
+						<% @players.each do |player| %>
+									<% b_score = @match.bowlings.find_by(pid: player.pid) %>
+									<% if b_score.present? %>
+										<tr>
+								  	      <td><%= b_score.bowler %></td>
+								  	      <td><%= b_score.overs %></td>
+								  	      <td><%= b_score.wickets %></td>
+								  	      <td><%= b_score.maidens %></td>
+								          <td><%= b_score.runs %></td>
+								  	      <td><%= b_score.sixs %></td>
+								  	      <td><%= b_score.fours %></td>
+								  	      <td><%= b_score.zeros %></td>
+								          <td><%= b_score.econ %></td>
+								          <td><%= player.get_points(current_user, @match) %></td>
+								  	    </tr>
+								  	 <% end %>
+						<% end %>
+					</table>
+					<table class="table">
+						<th>Player</th>
+						<th>Run Out</th>
+						<th>Stump</th>
+						<th>Bowled</th>
+						<th>LBW</th>
+						<th>Catch</th>
+						<th>Points</th>
+						<% @players.each do |player| %>
+							<% b_score = @match.fieldings.find_by(pid: player.pid) %>
+							<% if b_score.present? %>
+								<tr>
+									<td><%= b_score.fielder %></td>
+					  	      <td><%= b_score.runout %></td>
+					  	      <td><%= b_score.stumped %></td>
+					  	      <td><%= b_score.bowled %></td>
+					          <td><%= b_score.lbw %></td>
+					  	      <td><%= b_score.catch %></td>
+									<td><%= player.get_points(current_user, @match) %></td>
+								</tr>
+							<% end %>
+						<% end %>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="col-3 text-center">
+			<div class="card card-contributions">
+		    <div class="card-body ">
+		      <h6 class="card-title vertical d-inline d-inline-block mr-4 pr-4">
+		      	Total Score <br>
+		      	<%= @match.get_total_score(current_user.id) %>
+		      </h6>
+		      <h6 class="card-title d-inline d-inline-block pl-3">
+		      	Rank <br>
+		      	<%= MyScore.get_total_rank(current_user, @squad.match_id) %>
+		      </h6>
+		      <!-- <h6 class="card-category">Total Public Contributions</h6> -->
+		      <!-- <p class="card-description">Some Text Here to Say to users</p> -->
+		    </div>
+	  	</div>
+		</div>
+	</div>
+</div>

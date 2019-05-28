@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="row">
+  <% @squads.each_slice(3).each do |squads| %>
+    <div class="col-xs-5">
+      <% squads.each do |squad| %>
+        <div class="card-container mt-4 pl-5">
+          <div class="card-main u-clearfix">
+            <img class="card-img" src="/assets/cskvsrr.png" alt="Card image">
+            <div class="card-img-overlay">
+              <div class="card-sub">          
+                <h2 class="match-title"><%= squad.match.team_1 %> Vs <%= squad.match.team_2 %></h2>
+                <span class="card-description subtle">These last few weeks I have been working hard on a new brunch recipe for you all.</span>
+                <div class="card-read"><%= match_time_display(squad.match.match_time) %></div>
+                  <%= link_to "View my Squad", squad_path(squad), class: "btn btn-primary" %>
+              </div>
+            </div>
+          </div>
+          <div class="card-shadow"></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<%= form_for @match, url: finish_setup_path(id: @match.id), method: :post do |f| %>
+  <table class="table table-bordered">
+    <tr>
+      <th>Player</th>
+      <th>Country</th>
+      <th>Role</th>
+      <th>Points</th>
+    </tr>
+    <% @match.teams.each do |team| %>
+      <%= f.fields_for :teams, team do |builder| %>
+    		<tr>
+    			<td><%= team.player %></td>
+    			<td><%= team.country %></td>
+          <td><%= team.role %></td>
+    			<td><%= builder.text_field :points, value: rand(100..300) %></td>
+    		</tr>
+      <% end %>
+    <% end %>
+  </table>
+  <%= f.submit "Save", class: "btn btn-primary" %>
+<% end %>

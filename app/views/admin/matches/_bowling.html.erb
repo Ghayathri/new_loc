@@ -1,0 +1,38 @@
+<h5>Bowling</h5>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Bowler</th>
+      <th scope="col">Overs</th>
+      <th scope="col">Wickets</th>
+      <th scope="col">Maidens</th>
+      <th scope="col">Runs</th>
+      <th scope="col">6s</th>
+      <th scope="col">4s</th>
+      <th scope="col">Dots</th>
+      <th scope="col">Econ</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  	<% @match.bowlings.group_by(&:team_name).each do |bowlings, info| %>
+      <tr>
+        <th><%= bowlings %></th>
+      </tr>
+      <% info.each_with_index do |bat,index| %>
+    		<tr>
+  	      <td><%= bat.bowler %></td>
+  	      <td><%= bat.overs %></td>
+  	      <td><%= bat.wickets %></td>
+  	      <td><%= bat.maidens %></td>
+          <td><%= bat.runs %></td>
+  	      <td><%= bat.sixs %></td>
+  	      <td><%= bat.fours %></td>
+  	      <td><%= bat.zeros %></td>
+          <td><%= bat.econ %></td>
+  	    </tr>
+      <% end %>
+	<% end %>
+  </tbody>
+</table>
+

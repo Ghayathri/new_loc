@@ -1,0 +1,303 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card mb-3 w-100 h-100">
+        <div class="card-header text-white bg-primary">
+        	<div>
+        		<ul class="pl-2">
+        			<li class="d-inline mr-2"><%= @match.match_title %></li>
+              <li class="d-inline ml-5 mr-2">BT: <span class="batsman badge badge-warning">0</span></li>
+              <li class="d-inline mr-2">BO: <span class="bowler badge badge-warning">0</span></li>
+              <li class="d-inline mr-2">WK: <span class="wicket badge badge-warning">0</span></li>
+              <li class="d-inline mr-2">AR: <span class="allround badge badge-warning">0</span></li>
+              <li class="d-inline mr-2">
+              	<%= form_for @squad, url: squads_path, method: :post, :html => {:class => 'float-right'} do |f| %>
+              		<%= f.hidden_field :user_id, value: current_user.id %>
+				        	<%= f.hidden_field :match_id, value: @match.id %>
+				        	<%= f.hidden_field :player_ids, id: "player_ids", value: "" %>
+				        	<span  id="save_button" style="display: none;">
+					        	<%= f.submit "Save Squad", class: "btn btn-success btn-sm" %>
+					        	<%= link_to "Cancel", matches_path, method: :get, class: "btn btn-warning btn-sm" %>
+					        </span>
+				      	<% end %>
+		      		</li>
+            </ul>
+        	</div>
+        </div>
+        <div class="card-body px-0">
+	      		<% @match.teams.group_by(&:team_name).each_with_index do |(team, squads), index| %>
+	      			<div class="col-xs-4 <%= index == 0 ? 'float-left team-split' : 'float-right' %>">
+								<h1 class="ribbon">
+									<strong class="ribbon-content text-uppercase"><%= team %></strong>
+								</h1>
+		      			<% squads.each_slice(4).each do |squads| %>
+		      				<div class="card-deck mx-auto mt-3">
+		        				<% squads.group_by(&:role).each do |role, squad| %>
+		        					<% squad.each do |player| %>
+											  <div class="card player-card sample_<%= player.id %>">
+											  	<span class="badge badge-pill badge-warning no-pill"><%= player.points %></span>
+											    <img src="/assets/player.png" class="card-img-top img-circular mx-auto" alt="...">
+											    <h6 class="player-title text-center"><%= player.get_role %><br>
+											   	<%= player.player %></h6>
+											  </div>
+											  <script type="text/javascript">
+											  	$(".sample_<%= player.id %>").imgCheckbox(
+											  		{	
+										  			 	onclick: function(el){
+									  			 			validated_players(el,"<%= player.get_role %>", "<%= player.id %>", "<%= player.points %>");
+										  			 	}
+											  		})
+											  </script>
+											<% end %>
+										<% end %>
+									</div>
+								<% end %>
+							</div>
+						<% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+	var batsman = 0;
+	var bowlers = 0;
+	var wictkeep = 0;
+	var allround = 0;
+	var foreigner = 0;
+	var total = 0;
+	var total_players = 0
+	var mybatsman = new Array();
+	var mybowlers = new Array();
+	var mywictkeep = new Array();
+	var myallround = new Array();
+	var myforeigner = new Array();
+
+	function validated_players(el,role, player_id, player_pnt)
+	{
+		if (role == "Batsman"){
+			if (jQuery.inArray(player_id, mybatsman) != -1){
+				batsman = batsman - 1;
+				mybatsman.splice($.inArray(player_id, mybatsman),1);
+				total += parseFloat(player_pnt);
+				total_players -= 1
+			} else {
+				if (batsman < get_bat_numbers(bowlers,allround,total_players))
+				{
+					batsman = batsman + 1;
+					mybatsman.push(player_id);
+					total += parseFloat(player_pnt);
+					total_players += 1
+				}else
+				{
+					el.deselect();
+					new PNotify({
+					  title: 'Warning',
+					  type:  'notice',
+					  text: 'No more Batsman can be selected',
+					  modules: {
+					    Buttons: {
+					      sticker: false
+					    }
+					  }
+					});
+				}
+			}
+		}else if (role == "Bowler") 
+		{
+			if (jQuery.inArray(player_id, mybowlers) != -1){
+				bowlers = bowlers - 1;
+				mybowlers.splice($.inArray(player_id, mybowlers),1);
+				total -= parseFloat(player_pnt);
+				total_players -= 1;
+			}else {
+				if (bowlers < get_bowl_numbers(batsman,allround,total_players))
+				{
+					bowlers = bowlers + 1;
+					mybowlers.push(player_id);
+					total += parseFloat(player_pnt);
+					total_players += 1;
+				}
+				else
+				{
+					el.deselect();
+					new PNotify({
+					  title: 'Warning',
+					  type:  'notice',
+					  text: 'No more Bowler can be selected',
+					  modules: {
+					    Buttons: {
+					      sticker: false
+					    }
+					  }
+					});
+				}
+			}
+		}else if (role == "Wicketkeeper")
+		{
+			if (jQuery.inArray(player_id, mywictkeep) != -1){
+				wictkeep = wictkeep - 1;
+				mywictkeep.splice($.inArray(player_id, mywictkeep),1);
+				total -= parseFloat(player_pnt);
+				total_players -= 1;
+			}else {
+ 				if (wictkeep >=1)
+ 				{
+ 					el.deselect();
+ 					new PNotify({
+					  title: 'Warning',
+					  type:  'notice',
+					  text: 'No more Wicketkeeper can be selected',
+					  modules: {
+					    Buttons: {
+					      sticker: false
+					    }
+					  }
+					});
+ 				}else{
+ 					wictkeep = wictkeep + 1;
+	 				mywictkeep.push(player_id);
+	 				total += parseFloat(player_pnt);
+	 				total_players += 1;
+	 			}
+			}
+		}
+		else if (role == "Allrounder") {
+			if (jQuery.inArray(player_id, myallround) != -1){
+				allround = allround - 1;
+				myallround.splice($.inArray(player_id, myallround),1);
+				total -= parseFloat(player_pnt);
+				total_players -= 1;
+			}else {
+				if (allround < get_allr_numbers(batsman,bowlers,total_players)){
+					allround = allround + 1;
+					myallround.push(player_id);
+					total += parseFloat(player_pnt);
+					total_players += 1;
+				}
+				else
+				{
+					el.deselect();
+	        new PNotify({
+	            title: 'Regular Notice',
+	            type:  'notice',
+	            text: 'Check me out! I\'m a notice.',
+	            modules: {
+						    Buttons: {
+						      sticker: false
+						    }
+						  }
+	        });
+				}
+			}
+		}
+		else if (role != "India") {
+			if (jQuery.inArray(player_id, myforeigner) != -1){
+				foreigner = foreigner - 1;
+				myforeigner.splice($.inArray(player_id, myforeigner),1);
+				total -= parseFloat(player_pnt);
+			}else {
+				foreigner = foreigner + 1;
+				myforeigner.push(player_id);
+				total += parseFloat(player_pnt);
+			}
+		}
+		$('.batsman').text(batsman);
+		$('.bowler').text(bowlers);
+		$('.wicket').text(wictkeep);
+		$('.allround').text(allround);
+		var player_ids = mybatsman.concat(mybowlers).concat(mywictkeep).concat(myallround)
+    $('#player_ids').val(player_ids)
+    if (total_players == 11)
+    {
+    	$("#save_button").css('display', '');
+    }
+	}
+
+	function get_bat_numbers(bol,allr,players)
+	{
+		if (players < 11 )
+		{
+			if (allr == 3)
+			{
+	  		if (bol == 4) { return 3;}
+	  		else if (bol == 3) { return 4; }
+	  		else { return 5;	}
+			}
+
+			else if (allr == 2)
+			{ 
+				if (bol == 3 || bol < 3) { return 5; } 
+				else if (bol == 5) { return 3; }
+	 			else { return 5; }
+			}
+
+			else if (allr == 1)
+			{
+	 			if (bol == 5) { return 4; }
+	 			else if (bol == 4) { return 5; }
+	 			else if (bol < 4 ) { return 5;}
+			}
+			else if (allr == 0)
+			{
+				if (bol == 4) { return 3;}
+	  		else if (bol == 3 || bol < 3) { return 5; } 
+				else if (bol == 5) { return 3; }
+				else if (bol == 5) { return 4; }
+	 			else if (bol == 4) { return 5; }
+	 			else if (bol < 4 ) { return 5;}
+			}
+		}
+	}
+
+	function get_bowl_numbers(bat,allr,players)
+	{
+		if (players < 11 )
+		{
+			if (allr == 3 || 0)
+			{
+	  		if (bat == 4) { return 3;}
+	  		else if (bat == 3) { return 4; }
+	  		else if (bat == 0) {return 4; }
+	  		else { return 5;	}
+			}
+
+			else if (allr == 2 || 0)
+			{ 
+				if (bat == 3 || bat < 3) { return 5; } 
+				else if (bat == 5) { return 3; }
+	 			else { return 5; }
+			}
+
+			else if (allr == 1 || 0)
+			{
+	 			if (bat == 5) { return 4; }
+	 			else if (bat == 4) { return 5; }
+	 			else if (bat < 4 ) { return 5;}
+			}
+			else if (allr == 0)
+			{
+				if (bat == 4) { return 3;}
+	  		else if (bat == 3) { return 4; }
+	  		else if (bat == 3 || bat < 3) { return 5; } 
+				else if (bat == 5) { return 3; }
+				else if (bat == 5) { return 4; }
+	 			else if (bat == 4) { return 5; }
+	 			else if (bat < 4 ) { return 5;}
+			}
+		}
+	}
+
+	function get_allr_numbers(bat,bol,players)
+	{
+		if (bat == 5 && bol == 4) { return 1; }
+		else if (bat == 4 && bol == 5) { return 1; }
+		else if (bat == 4 && bol ==3) { return 3; }
+		else if (bat == 3 && bol == 4) { return 3 ; }
+		else if (bat == 3 && bol == 5) { return 2; }
+		else if (bat == 5 && bol == 3) { return 2; }
+		else { return 3; }
+	}
+
+
+</script>

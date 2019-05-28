@@ -1,0 +1,32 @@
+<h5>Fielding</h5>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Fielder</th>
+      <th scope="col">Run out</th>
+      <th scope="col">Stump</th>
+      <th scope="col">Bowled</th>
+      <th scope="col">LBW</th>
+      <th scope="col">Catch</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  	<% @match.fieldings.group_by(&:team_name).each do |fieldings, info| %>
+      <tr>
+        <th><%= fieldings %></th>
+      </tr>
+      <% info.each_with_index do |bat,index| %>
+    		<tr>
+  	      <td><%= bat.fielder %></td>
+  	      <td><%= bat.runout %></td>
+  	      <td><%= bat.stumped %></td>
+  	      <td><%= bat.bowled %></td>
+          <td><%= bat.lbw %></td>
+  	      <td><%= bat.catch %></td>
+  	    </tr>
+      <% end %>
+	<% end %>
+  </tbody>
+</table>
+
